@@ -89,13 +89,13 @@ def get_zettel(file: str) -> Zettel:
                     cl = f.readline()
                     if not cl:
                         break
-                    context.append(cl.strip())
+                    context.append(cl)
                 context.append("...")
 
                 return Zettel(
                     uid=get_zettel_id_from_filename(file),
                     title=line.strip(),
-                    context="\n".join(context))
+                    context="".join(context))
 
             if counter >= MAX_LINES_TO_SEARCH:
                 break
