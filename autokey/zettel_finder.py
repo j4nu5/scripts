@@ -9,7 +9,9 @@ DIALOG_HEIGHT = "1000"
 # Max number of lines to search for a title inside a file.
 MAX_LINES_TO_SEARCH = 50
 MAX_CONTEXT_LINES = 5
+# Start of a markdown title.
 MD_TITLE_START = "# "
+MIN_QUERY_LENGTH = 3
 
 RE_NON_WORDS_PATTERN = re.compile("[^\w ]+", re.UNICODE)
 RE_MULTIPLE_SPACES_PATTERN = re.compile(" +", re.UNICODE)
@@ -129,7 +131,11 @@ def get_zettel_selection(zettels: List[Zettel]) -> str:
                for z in zettels]
 
     retCode, choice = dialog.list_menu(
-        options, width=DIALOG_WIDTH, height=DIALOG_HEIGHT)
+        options,
+        title="Choose a Zettel",
+        message="Choose a Zettel",
+        width=DIALOG_WIDTH,
+        height=DIALOG_HEIGHT)
     if retCode != 0:
         return ""
     return choice
@@ -139,6 +145,11 @@ def get_zettel_selection(zettels: List[Zettel]) -> str:
 query = get_search_query()
 if not query:
     # User cancelled the dialog
+    exit()
+
+if len(query) < MIN_QUERY_LENGTH:
+    dialog.info_dialog(title="Invalid query",
+                       message="Please enter minimum %d characters" % MIN_QUERY_LENGTH)
     exit()
 
 # Search for zettels.
@@ -157,7 +168,7 @@ if not choice:
 # "# Title ([[id]])"
 title_and_id = choice.split("\n")[0]
 # Strip the leading "# " from the title.
-title_and_id = title_and_id[1:].lstrip()
+title_and_id = title_and_id[len(MD_TITLE_START):].lstrip()
 
 if DID_USER_SELECT_TEXT:
     keyboard.send_key("<delete>")
