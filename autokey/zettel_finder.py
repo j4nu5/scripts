@@ -1,3 +1,4 @@
+from email.policy import default
 import os
 import re
 from typing import List
@@ -36,9 +37,18 @@ def get_search_query() -> str:
     Gets the search query from the user.
     Returns an empty string if the user cancels the dialog.
     """
+    text = ""
+    try:
+        text = clipboard.get_selection()
+    except Exception as e:
+        pass
+    if text:
+        # Delete the previously selected text?
+        keyboard.send_key("<delete>")
     retCode, query = dialog.input_dialog(
         title="Search for a zettel",
         message="Enter a zettel title to search",
+        default=text,
         width=DIALOG_WIDTH)
 
     query = sanitize(query)
@@ -93,6 +103,9 @@ def get_zettel(file: str) -> Zettel:
 
 
 def find_zettels(query: str, second_brain_root: str) -> List[Zettel]:
+    """
+    Searches second_brain_root for a list of zettels matching query in their title.
+    """
     zettels = []
 
     files = [f for f in os.listdir(second_brain_root) if os.path.isfile(
@@ -109,7 +122,9 @@ def find_zettels(query: str, second_brain_root: str) -> List[Zettel]:
 
 
 def get_zettel_selection(zettels: List[Zettel]) -> str:
-    # Display the list of options to the user.
+    """
+    Display the list of options to the user and gets a selected option.
+    """
     options = ["%s ([[%s]])\n%s" % (z.title, z.uid, z.context) for z in zettels]
 
     retCode, choice = dialog.list_menu(
