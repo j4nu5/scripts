@@ -1,4 +1,3 @@
-from email.policy import default
 import os
 import re
 from typing import List
@@ -14,6 +13,8 @@ MD_TITLE_START = "# "
 
 RE_NON_WORDS_PATTERN = re.compile("[^\w ]+", re.UNICODE)
 RE_MULTIPLE_SPACES_PATTERN = re.compile(" +", re.UNICODE)
+
+DID_USER_SELECT_TEXT = False
 
 
 class Zettel(NamedTuple):
@@ -43,8 +44,7 @@ def get_search_query() -> str:
     except Exception as e:
         pass
     if text:
-        # Delete the previously selected text?
-        keyboard.send_key("<delete>")
+        DID_USER_SELECT_TEXT = True
     retCode, query = dialog.input_dialog(
         title="Search for a zettel",
         message="Enter a zettel title to search",
@@ -125,7 +125,8 @@ def get_zettel_selection(zettels: List[Zettel]) -> str:
     """
     Display the list of options to the user and gets a selected option.
     """
-    options = ["%s ([[%s]])\n%s" % (z.title, z.uid, z.context) for z in zettels]
+    options = ["%s ([[%s]])\n%s" % (z.title, z.uid, z.context)
+               for z in zettels]
 
     retCode, choice = dialog.list_menu(
         options, width=DIALOG_WIDTH, height=DIALOG_HEIGHT)
@@ -156,4 +157,8 @@ if not choice:
 # "# Title ([[id]])"
 title_and_id = choice.split("\n")[0]
 # Strip the leading "# " from the title.
-keyboard.send_keys(title_and_id[1:].lstrip())
+title_and_id = title_and_id[1:].lstrip()
+
+if DID_USER_SELECT_TEXT:
+    keyboard.send_key("<delete>")
+keyboard.send_keys(title_and_id)
