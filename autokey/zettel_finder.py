@@ -127,7 +127,7 @@ def get_zettel_selection(zettels: List[Zettel]) -> str:
     """
     Display the list of options to the user and gets a selected option.
     """
-    options = ["%s ([[%s]])\n%s" % (z.title, z.uid, z.context)
+    options = ["%s [[%s]]\n%s" % (z.title, z.uid, z.context)
                for z in zettels]
 
     retCode, choice = dialog.list_menu(
