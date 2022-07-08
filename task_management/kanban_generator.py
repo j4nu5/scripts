@@ -37,19 +37,26 @@ def parse(raw_task: str) -> Task:
     if not raw_task:
         return None
 
-    desc = raw_task.strip()
+    desc = []
     contexts = []
     projects = []
 
     tokens = raw_task.strip().split()
+
+    is_done = False
+    if len(tokens) > 0 and tokens[0] == TAG_DONE:
+        is_done = True
+        tokens = tokens[1:]
+
     for token in tokens:
         if token.startswith(TAG_CONTEXT):
             contexts.append(token[1:])
         elif token.startswith(TAG_PROJECT):
             projects.append(token[1:])
+        else:
+            desc.append(token)
 
-    is_done = (tokens[0] == TAG_DONE) if len(tokens) > 0 else False
-    return Task(desc=desc, contexts=contexts, projects=projects, is_done=is_done)
+    return Task(desc=" ".join(desc), contexts=contexts, projects=projects, is_done=is_done)
 
 
 def get_tasks() -> List[Task]:
@@ -80,6 +87,11 @@ def generate_task_dict(tasks: List[Task]) -> OrderedDict:
 
     for task in tasks:
         desc = task.desc
+        if task.contexts:
+            desc += " " + " ".join(map("_@[[{0}]]_".format, task.contexts))
+        if task.projects:
+            desc += " " + " ".join(map("**+[[{0}]]**".format, task.projects))
+
         if task.is_done:
             task_dict[COLUMN_DONE].append(desc)
             continue
