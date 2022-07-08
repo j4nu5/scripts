@@ -63,8 +63,8 @@ def get_tasks() -> List[Task]:
     return tasks
 
 
-def generate_table(tasks: List[Task]) -> OrderedDict:
-    """Generates a table of the following form
+def generate_task_dict(tasks: List[Task]) -> OrderedDict:
+    """Generates a dictionary of the following form
     {
       "Todo": ["Raw task description", ...],
       "Doing": [...],
@@ -72,7 +72,7 @@ def generate_table(tasks: List[Task]) -> OrderedDict:
       "Waiting": [...],
     }
     """
-    table = OrderedDict({
+    task_dict = OrderedDict({
         COLUMN_TODO: [],
         COLUMN_DOING: [],
         COLUMN_DONE: [],
@@ -80,21 +80,44 @@ def generate_table(tasks: List[Task]) -> OrderedDict:
     })
 
     for task in tasks:
+        desc = task.desc
         if task.is_done:
-            table[COLUMN_DONE].append(task.desc)
+            task_dict[COLUMN_DONE].append(desc)
             continue
 
         if CONTEXT_DOING in task.contexts:
-            table[COLUMN_DOING].append(task.desc)
+            task_dict[COLUMN_DOING].append(desc)
         elif CONTEXT_WAITING in task.contexts:
-            table[COLUMN_WAITING].append(task.desc)
+            task_dict[COLUMN_WAITING].append(desc)
         else:
-            table[COLUMN_TODO].append(task.desc)
+            task_dict[COLUMN_TODO].append(desc)
+
+    return task_dict
+
+
+def generate_table(task_dict: OrderedDict):
+    """Generates a table for tabular to consume with column headers as the
+    first row and non-existent rows replaced by empty strings."""
+    table = []
+    keys = list(task_dict.keys())
+
+    table.append(keys)
+
+    max_num_tasks = max([len(task_dict[key]) for key in keys])
+    for i in range(max_num_tasks):
+        row = []
+        for key in keys:
+            if i < len(task_dict[key]):
+                row.append(task_dict[key][i])
+            else:
+                row.append("")
+        table.append(row)
 
     return table
 
 
 parsed_tasks = get_tasks()
-table = generate_table(parsed_tasks)
+table = generate_table(generate_task_dict(parsed_tasks))
 
-print(tabulate(table, headers="keys", maxcolwidths=[MAX_COL_WIDTH for _ in range(len(table.keys()))], tablefmt=FORMAT))
+print(tabulate(table, headers="firstrow", maxcolwidths=[
+      MAX_COL_WIDTH for _ in range(len(table[0]))], tablefmt=FORMAT))
