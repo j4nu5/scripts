@@ -37,7 +37,7 @@ def parse(raw_task: str) -> Task:
     if not raw_task:
         return None
 
-    desc = raw_task
+    desc = raw_task.strip()
     contexts = []
     projects = []
 
