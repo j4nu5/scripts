@@ -97,4 +97,4 @@ def generate_table(tasks: List[Task]) -> OrderedDict:
 parsed_tasks = get_tasks()
 table = generate_table(parsed_tasks)
 
-print(tabulate(table, headers="keys", maxcolwidths=[MAX_COL_WIDTH * len(table.keys())], tablefmt=FORMAT))
+print(tabulate(table, headers="keys", maxcolwidths=[MAX_COL_WIDTH for _ in range(len(table.keys()))], tablefmt=FORMAT))
