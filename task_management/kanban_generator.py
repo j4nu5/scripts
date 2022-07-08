@@ -12,7 +12,6 @@ from typing import NamedTuple
 
 
 FORMAT = "github"
-MAX_COL_WIDTH = 25
 
 COLUMN_TODO = "Todo"
 COLUMN_DOING = "Doing"
@@ -119,5 +118,4 @@ def generate_table(task_dict: OrderedDict):
 parsed_tasks = get_tasks()
 table = generate_table(generate_task_dict(parsed_tasks))
 
-print(tabulate(table, headers="firstrow", maxcolwidths=[
-      MAX_COL_WIDTH for _ in range(len(table[0]))], tablefmt=FORMAT))
+print(tabulate(table, headers="firstrow", tablefmt=FORMAT))
