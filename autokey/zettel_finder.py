@@ -1,3 +1,11 @@
+"""Zettel Finder
+
+An autokey script to find zettels by title and display a list of options
+to the user for selecting a zettel. Once the user selects a zettel, the
+script emits the title of the zettel and its zettel id at the current
+keyboard cursor.
+"""
+
 import os
 import re
 from typing import List
