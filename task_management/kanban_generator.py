@@ -17,9 +17,11 @@ COLUMN_TODO = "Todo"
 COLUMN_DOING = "Doing"
 COLUMN_DONE = "Done"
 COLUMN_WAITING = "Waiting"
+COLUMN_BLOCKED = "Blocked"
 
 CONTEXT_DOING = "doing"
 CONTEXT_WAITING = "waiting"
+CONTEXT_BLOCKED = "blocked"
 
 TAG_CONTEXT = "@"
 TAG_PROJECT = "+"
@@ -83,6 +85,7 @@ def generate_task_dict(tasks: List[Task]) -> OrderedDict:
         COLUMN_DOING: [],
         COLUMN_DONE: [],
         COLUMN_WAITING: [],
+        COLUMN_BLOCKED: [],
     })
 
     for task in tasks:
@@ -100,6 +103,8 @@ def generate_task_dict(tasks: List[Task]) -> OrderedDict:
             task_dict[COLUMN_DOING].append(desc)
         elif CONTEXT_WAITING in task.contexts:
             task_dict[COLUMN_WAITING].append(desc)
+        elif CONTEXT_BLOCKED in task.contexts:
+            task_dict[COLUMN_BLOCKED].append(desc)
         else:
             task_dict[COLUMN_TODO].append(desc)
 
